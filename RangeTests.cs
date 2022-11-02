@@ -20,8 +20,8 @@ namespace Ploeh.Katas.RangeCSharp
             .Sample(t =>
             {
                 var sut = new Range<short>(
-                    new ClosedEndpoint<short>(t.min),
-                    new ClosedEndpoint<short>(t.max));
+                    Endpoint.Closed(t.min),
+                    Endpoint.Closed(t.max));
 
                 var actual = sut.Contains(t.xs);
 
@@ -39,8 +39,8 @@ namespace Ploeh.Katas.RangeCSharp
             {
                 var max = t.min + t.size;
                 var sut = new Range<int>(
-                    new ClosedEndpoint<int>(t.min),
-                    new ClosedEndpoint<int>(max));
+                    Endpoint.Closed(t.min),
+                    Endpoint.Closed(max));
 
                 var outside = new[] { t.min - 1, max + 1 };
                 var actual = sut.Contains(outside);

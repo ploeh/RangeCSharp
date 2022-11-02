@@ -2,18 +2,27 @@
 {
     public sealed class Range<T> where T : IComparable<T>
     {
-        public Range(ClosedEndpoint<T> min, ClosedEndpoint<T> max)
-        {
-            Min = min;
-            Max = max;
-        }
+        private readonly Endpoint<T> min;
+        private readonly Endpoint<T> max;
 
-        public ClosedEndpoint<T> Min { get; }
-        public ClosedEndpoint<T> Max { get; }
+        public Range(Endpoint<T> min, Endpoint<T> max)
+        {
+            this.min = min;
+            this.max = max;
+        }
 
         public bool Contains(IEnumerable<T> candidates)
         {
-            return candidates.All(c => Min.Value.CompareTo(c) <= 0 && c.CompareTo(Max.Value) <= 0);
+            return candidates.All(IsInRange);
+        }
+
+        private bool IsInRange(T candidate)
+        {
+            return min.Match(
+                whenClosed: l => max.Match(
+                    whenClosed: h => l.CompareTo(candidate) <= 0 && candidate.CompareTo(h) <= 0,
+                    whenOpen: _ => false),
+                whenOpen: _ => false);
         }
     }
 }
