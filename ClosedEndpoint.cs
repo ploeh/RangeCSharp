@@ -4,6 +4,9 @@
     {
         public ClosedEndpoint(T value)
         {
+            Value = value;
         }
+
+        public T Value { get; }
     }
 }
