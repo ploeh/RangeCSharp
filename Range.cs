@@ -21,7 +21,7 @@
             return min.Match(
                 whenClosed: l => max.Match(
                     whenClosed: h => l.CompareTo(candidate) <= 0 && candidate.CompareTo(h) <= 0,
-                    whenOpen: _ => false),
+                    whenOpen: h => l.CompareTo(candidate) <= 0 && candidate.CompareTo(h) < 0),
                 whenOpen: l => max.Match(
                     whenClosed: h => l.CompareTo(candidate) < 0 && candidate.CompareTo(h) <= 0,
                     whenOpen: h => l.CompareTo(candidate) < 0 && candidate.CompareTo(h) < 0));
