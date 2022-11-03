@@ -37,6 +37,13 @@ namespace Ploeh.Katas.RangeCSharp
                 return whenOpen(value);
         }
 
+        public Endpoint<TResult> Select<TResult>(Func<T, TResult> selector)
+        {
+            return Match(
+                whenClosed: x => Endpoint.Closed(selector(x)),
+                whenOpen: x => Endpoint.Open(selector(x)));
+        }
+
         public override bool Equals(object? obj)
         {
             return obj is Endpoint<T> endpoint &&
