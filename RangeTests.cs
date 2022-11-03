@@ -165,5 +165,42 @@ namespace Ploeh.Katas.RangeCSharp
                 Assert.False(actual, $"Expected {sut} to not contain {outside}.");
             });
         }
+
+        [Fact]
+        public void FirstFunctorLaw()
+        {
+            var genEndpoint = Gen.OneOf(
+                Gen.Int.Select(Endpoint.Closed),
+                Gen.Int.Select(Endpoint.Open));
+            genEndpoint.SelectMany(min => genEndpoint
+                .Select(max => new Range<int>(min, max)))
+            .Sample(sut =>
+            {
+                var actual = sut.Select(x => x);
+
+                Assert.Equal(sut, actual);
+            });
+        }
+
+        [Fact]
+        public void SecondFunctorLaw()
+        {
+            var genEndpoint = Gen.OneOf(
+                Gen.Int.Select(Endpoint.Closed),
+                Gen.Int.Select(Endpoint.Open));
+            (from min in genEndpoint
+             from max in genEndpoint
+             from f in Gen.OneOfConst<Func<int, int>>(x => x, x => x + 1, x => x * 2)
+             from g in Gen.OneOfConst<Func<int, int>>(x => x, x => x + 1, x => x * 2)
+             select (sut : new Range<int>(min, max), f, g))
+            .Sample(t =>
+            {
+                var actual = t.sut.Select(x => t.g(t.f(x)));
+
+                Assert.Equal(
+                    t.sut.Select(t.f).Select(t.g),
+                    actual);
+            });
+        }
     }
 }
