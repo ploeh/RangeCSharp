@@ -87,5 +87,44 @@ namespace Ploeh.Katas.RangeCSharp
                 Assert.False(actual, $"Expected {sut} to not contain {outside}.");
             });
         }
+
+        [Fact]
+        public void OpenClosedRangeContainsList()
+        {
+            (from xs in Gen.Long.Enumerable.Nonempty
+             let min = xs.Min()
+             let max = xs.Max()
+             select (xs, min, max))
+            .Sample(t =>
+            {
+                var sut = new Range<long>(
+                    Endpoint.Open(t.min - 1),
+                    Endpoint.Closed(t.max));
+
+                var actual = sut.Contains(t.xs);
+
+                Assert.True(actual, $"Expected {t.xs} to be contained in {sut}.");
+            });
+        }
+
+        [Fact]
+        public void OpenClosedRangeDoesNotContainEndpoints()
+        {
+            (from min in Gen.Int
+             from size in Gen.Int[1, 99]
+             select (min, size))
+            .Sample(t =>
+            {
+                var max = t.min + t.size;
+                var sut = new Range<int>(
+                    Endpoint.Open(t.min),
+                    Endpoint.Closed(max));
+
+                var outside = new[] { t.min, max + 1 };
+                var actual = sut.Contains(outside);
+
+                Assert.False(actual, $"Expected {sut} to not contain {outside}.");
+            });
+        }
     }
 }
